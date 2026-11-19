@@ -18,8 +18,8 @@ public class ProductoService {
     }
 
     public Producto crear(Producto producto) {
-        if (producto.getNombre() != null && productoRepository.existsByNombre(producto.getNombre())) {
-            throw new DatoDuplicadoException("Ya existe un producto con el nombre: " + producto.getNombre());
+        if (producto.getCodigo() != null && productoRepository.existsByCodigo(producto.getCodigo())) {
+            throw new DatoDuplicadoException("Ya existe un producto con el código: " + producto.getCodigo());
         }
         return productoRepository.save(producto);
     }
@@ -35,6 +35,7 @@ public class ProductoService {
 
     public Producto actualizar(String id, Producto datosActualizados) {
         Producto existente = buscarPorId(id);
+        existente.setCodigo(datosActualizados.getCodigo());
         existente.setNombre(datosActualizados.getNombre());
         existente.setPrecio(datosActualizados.getPrecio());
         return productoRepository.save(existente);
