@@ -1,0 +1,11 @@
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\controller\ProductoController.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\CrudProductosApplication.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\dto\ProductoRequest.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\dto\ProductoResponse.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\exception\DatoDuplicadoException.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\exception\ErrorResponse.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\exception\GlobalExceptionHandler.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\exception\RecursoNoEncontradoException.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\model\Producto.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\repository\ProductoRepository.java
+C:\Users\alons\OneDrive\Escritorio\web\Dev-QA\crud-productos\src\main\java\com\example\crudproductos\service\ProductoService.java

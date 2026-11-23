@@ -1,0 +1,3 @@
+com\example\crudproductos\controller\ProductoControllerIntegrationTest.class
+com\example\crudproductos\CrudProductosApplicationTests.class
+com\example\crudproductos\service\ProductoServiceTest.class

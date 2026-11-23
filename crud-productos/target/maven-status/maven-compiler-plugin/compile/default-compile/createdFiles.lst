@@ -1,0 +1,11 @@
+com\example\crudproductos\CrudProductosApplication.class
+com\example\crudproductos\dto\ProductoRequest.class
+com\example\crudproductos\exception\DatoDuplicadoException.class
+com\example\crudproductos\service\ProductoService.class
+com\example\crudproductos\exception\RecursoNoEncontradoException.class
+com\example\crudproductos\model\Producto.class
+com\example\crudproductos\exception\ErrorResponse.class
+com\example\crudproductos\exception\GlobalExceptionHandler.class
+com\example\crudproductos\dto\ProductoResponse.class
+com\example\crudproductos\controller\ProductoController.class
+com\example\crudproductos\repository\ProductoRepository.class
