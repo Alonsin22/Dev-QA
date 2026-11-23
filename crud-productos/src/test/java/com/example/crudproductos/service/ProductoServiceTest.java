@@ -1,5 +1,7 @@
 package com.example.crudproductos.service;
 
+import com.example.crudproductos.dto.ProductoRequest;
+import com.example.crudproductos.dto.ProductoResponse;
 import com.example.crudproductos.exception.DatoDuplicadoException;
 import com.example.crudproductos.exception.RecursoNoEncontradoException;
 import com.example.crudproductos.model.Producto;
@@ -33,11 +35,19 @@ class ProductoServiceTest {
     private ProductoService productoService;
 
     private Producto productoBase;
+    private ProductoRequest requestBase;
 
     @BeforeEach
     void setUp() {
         productoBase = new Producto(
                 "1",
+                "Teclado Mecánico",
+                "Periféricos",
+                new BigDecimal("1200.00"),
+                15
+        );
+
+        requestBase = new ProductoRequest(
                 "Teclado Mecánico",
                 "Periféricos",
                 new BigDecimal("1200.00"),
@@ -50,10 +60,14 @@ class ProductoServiceTest {
         when(productoRepository.existsByNombreIgnoreCase("Teclado Mecánico")).thenReturn(false);
         when(productoRepository.save(any(Producto.class))).thenReturn(productoBase);
 
-        Producto resultado = productoService.crear(productoBase);
+        ProductoResponse resultado = productoService.crear(requestBase);
 
         assertNotNull(resultado);
-        assertEquals("Teclado Mecánico", resultado.getNombre());
+        assertEquals("1", resultado.id());
+        assertEquals("Teclado Mecánico", resultado.nombre());
+        assertEquals("Periféricos", resultado.categoria());
+        assertEquals(new BigDecimal("1200.00"), resultado.precio());
+        assertEquals(15, resultado.stock());
         verify(productoRepository).save(any(Producto.class));
     }
 
@@ -61,7 +75,7 @@ class ProductoServiceTest {
     void crearProducto_duplicado_lanzaExcepcion() {
         when(productoRepository.existsByNombreIgnoreCase("Teclado Mecánico")).thenReturn(true);
 
-        assertThrows(DatoDuplicadoException.class, () -> productoService.crear(productoBase));
+        assertThrows(DatoDuplicadoException.class, () -> productoService.crear(requestBase));
         verify(productoRepository, never()).save(any(Producto.class));
     }
 
@@ -69,19 +83,19 @@ class ProductoServiceTest {
     void listarTodos_retornaLista() {
         when(productoRepository.findAll()).thenReturn(List.of(productoBase));
 
-        List<Producto> lista = productoService.listarTodos();
+        List<ProductoResponse> lista = productoService.listarTodos();
 
         assertEquals(1, lista.size());
-        assertEquals("Teclado Mecánico", lista.get(0).getNombre());
+        assertEquals("Teclado Mecánico", lista.get(0).nombre());
     }
 
     @Test
     void obtenerPorId_existente_retornaProducto() {
         when(productoRepository.findById("1")).thenReturn(Optional.of(productoBase));
 
-        Producto encontrado = productoService.obtenerPorId("1");
+        ProductoResponse encontrado = productoService.obtenerPorId("1");
 
-        assertEquals("1", encontrado.getId());
+        assertEquals("1", encontrado.id());
     }
 
     @Test
@@ -93,8 +107,7 @@ class ProductoServiceTest {
 
     @Test
     void actualizarProducto_exitoso() {
-        Producto cambios = new Producto(
-                null,
+        ProductoRequest cambios = new ProductoRequest(
                 "Teclado Gamer",
                 "Periféricos",
                 new BigDecimal("1500.00"),
@@ -105,11 +118,11 @@ class ProductoServiceTest {
         when(productoRepository.existsByNombreIgnoreCase("Teclado Gamer")).thenReturn(false);
         when(productoRepository.save(any(Producto.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Producto actualizado = productoService.actualizar("1", cambios);
+        ProductoResponse actualizado = productoService.actualizar("1", cambios);
 
-        assertEquals("Teclado Gamer", actualizado.getNombre());
-        assertEquals(new BigDecimal("1500.00"), actualizado.getPrecio());
-        assertEquals(10, actualizado.getStock());
+        assertEquals("Teclado Gamer", actualizado.nombre());
+        assertEquals(new BigDecimal("1500.00"), actualizado.precio());
+        assertEquals(10, actualizado.stock());
     }
 
     @Test
@@ -128,10 +141,10 @@ class ProductoServiceTest {
         assertThrows(RecursoNoEncontradoException.class, () -> productoService.eliminar("99"));
         verify(productoRepository, never()).deleteById(any());
     }
+
     @Test
     void actualizarProducto_mismoNombre_actualizaSinError() {
-        Producto cambiosMismoNombre = new Producto(
-                null,
+        ProductoRequest cambiosMismoNombre = new ProductoRequest(
                 "teclado mecánico",
                 "Periféricos",
                 new BigDecimal("1350.00"),
@@ -141,17 +154,16 @@ class ProductoServiceTest {
         when(productoRepository.findById("1")).thenReturn(Optional.of(productoBase));
         when(productoRepository.save(any(Producto.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Producto actualizado = productoService.actualizar("1", cambiosMismoNombre);
+        ProductoResponse actualizado = productoService.actualizar("1", cambiosMismoNombre);
 
-        assertEquals("teclado mecánico", actualizado.getNombre());
-        assertEquals(new BigDecimal("1350.00"), actualizado.getPrecio());
-        assertEquals(20, actualizado.getStock());
+        assertEquals("teclado mecánico", actualizado.nombre());
+        assertEquals(new BigDecimal("1350.00"), actualizado.precio());
+        assertEquals(20, actualizado.stock());
     }
 
     @Test
     void actualizarProducto_nombreDuplicado_lanzaExcepcion() {
-        Producto cambiosDuplicados = new Producto(
-                null,
+        ProductoRequest cambiosDuplicados = new ProductoRequest(
                 "Mouse Gamer",
                 "Periféricos",
                 new BigDecimal("1500.00"),

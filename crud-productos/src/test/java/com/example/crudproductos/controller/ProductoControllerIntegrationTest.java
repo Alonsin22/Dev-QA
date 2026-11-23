@@ -1,9 +1,10 @@
 package com.example.crudproductos.controller;
 
+import com.example.crudproductos.dto.ProductoRequest;
+import com.example.crudproductos.dto.ProductoResponse;
 import com.example.crudproductos.exception.DatoDuplicadoException;
 import com.example.crudproductos.exception.GlobalExceptionHandler;
 import com.example.crudproductos.exception.RecursoNoEncontradoException;
-import com.example.crudproductos.model.Producto;
 import com.example.crudproductos.service.ProductoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class ProductoControllerIntegrationTest {
     @InjectMocks
     private ProductoController productoController;
 
-    private Producto productoEjemplo;
+    private ProductoResponse respuestaEjemplo;
 
     @BeforeEach
     void setUp() {
@@ -49,7 +50,7 @@ class ProductoControllerIntegrationTest {
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
 
-        productoEjemplo = new Producto(
+        respuestaEjemplo = new ProductoResponse(
                 "101",
                 "Mouse inalámbrico",
                 "Accesorios",
@@ -60,7 +61,7 @@ class ProductoControllerIntegrationTest {
 
     @Test
     void postProducto_valido_retorna201() throws Exception {
-        when(productoService.crear(any(Producto.class))).thenReturn(productoEjemplo);
+        when(productoService.crear(any(ProductoRequest.class))).thenReturn(respuestaEjemplo);
 
         String jsonBody = """
                 {
@@ -99,7 +100,7 @@ class ProductoControllerIntegrationTest {
 
     @Test
     void postProducto_duplicado_retorna409() throws Exception {
-        when(productoService.crear(any(Producto.class)))
+        when(productoService.crear(any(ProductoRequest.class)))
                 .thenThrow(new DatoDuplicadoException("Ya existe un producto registrado con el nombre: Mouse inalámbrico"));
 
         String jsonBody = """
@@ -120,7 +121,7 @@ class ProductoControllerIntegrationTest {
 
     @Test
     void getTodos_retorna200() throws Exception {
-        when(productoService.listarTodos()).thenReturn(List.of(productoEjemplo));
+        when(productoService.listarTodos()).thenReturn(List.of(respuestaEjemplo));
 
         mockMvc.perform(get("/api/productos"))
                 .andExpect(status().isOk())
@@ -139,7 +140,7 @@ class ProductoControllerIntegrationTest {
 
     @Test
     void putProducto_existente_retorna200() throws Exception {
-        when(productoService.actualizar(eq("101"), any(Producto.class))).thenReturn(productoEjemplo);
+        when(productoService.actualizar(eq("101"), any(ProductoRequest.class))).thenReturn(respuestaEjemplo);
 
         String jsonBody = """
                 {

@@ -1,6 +1,7 @@
 package com.example.crudproductos.controller;
 
-import com.example.crudproductos.model.Producto;
+import com.example.crudproductos.dto.ProductoRequest;
+import com.example.crudproductos.dto.ProductoResponse;
 import com.example.crudproductos.service.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -27,25 +28,26 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<Producto> crear(@Valid @RequestBody Producto producto) {
-        Producto creado = productoService.crear(producto);
+    public ResponseEntity<ProductoResponse> crear(@Valid @RequestBody ProductoRequest request) {
+        ProductoResponse creado = productoService.crear(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
     @GetMapping
-    public ResponseEntity<List<Producto>> listarTodos() {
+    public ResponseEntity<List<ProductoResponse>> listarTodos() {
         return ResponseEntity.ok(productoService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> obtenerPorId(@PathVariable String id) {
+    public ResponseEntity<ProductoResponse> obtenerPorId(@PathVariable String id) {
         return ResponseEntity.ok(productoService.obtenerPorId(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizar(@PathVariable String id,
-                                             @Valid @RequestBody Producto producto) {
-        return ResponseEntity.ok(productoService.actualizar(id, producto));
+    public ResponseEntity<ProductoResponse> actualizar(
+            @PathVariable String id,
+            @Valid @RequestBody ProductoRequest request) {
+        return ResponseEntity.ok(productoService.actualizar(id, request));
     }
 
     @DeleteMapping("/{id}")

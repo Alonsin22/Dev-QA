@@ -10,6 +10,9 @@ public record ProductoRequest(
         @NotBlank(message = "El nombre es obligatorio")
         String nombre,
 
+        @NotBlank(message = "La categoría es obligatoria")
+        String categoria,
+
         @NotNull(message = "El precio es obligatorio")
         @DecimalMin(value = "0.0", inclusive = true, message = "El precio no puede ser negativo")
         BigDecimal precio,

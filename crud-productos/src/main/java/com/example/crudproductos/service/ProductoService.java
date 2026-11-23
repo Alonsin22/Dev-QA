@@ -1,5 +1,7 @@
 package com.example.crudproductos.service;
 
+import com.example.crudproductos.dto.ProductoRequest;
+import com.example.crudproductos.dto.ProductoResponse;
 import com.example.crudproductos.exception.DatoDuplicadoException;
 import com.example.crudproductos.exception.RecursoNoEncontradoException;
 import com.example.crudproductos.model.Producto;
@@ -17,47 +19,72 @@ public class ProductoService {
         this.productoRepository = productoRepository;
     }
 
-    public Producto crear(Producto producto) {
-        if (productoRepository.existsByNombreIgnoreCase(producto.getNombre())) {
+    public ProductoResponse crear(ProductoRequest request) {
+        if (productoRepository.existsByNombreIgnoreCase(request.nombre())) {
             throw new DatoDuplicadoException(
-                    "Ya existe un producto registrado con el nombre: " + producto.getNombre()
+                    "Ya existe un producto registrado con el nombre: " + request.nombre()
             );
         }
-        producto.setId(null);
-        return productoRepository.save(producto);
+
+        Producto producto = new Producto();
+        producto.setNombre(request.nombre());
+        producto.setCategoria(request.categoria());
+        producto.setPrecio(request.precio());
+        producto.setStock(request.stock());
+
+        Producto guardado = productoRepository.save(producto);
+        return toResponse(guardado);
     }
 
-    public List<Producto> listarTodos() {
-        return productoRepository.findAll();
+    public List<ProductoResponse> listarTodos() {
+        return productoRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public Producto obtenerPorId(String id) {
+    public ProductoResponse obtenerPorId(String id) {
+        return toResponse(buscarEntidadPorId(id));
+    }
+
+    public ProductoResponse actualizar(String id, ProductoRequest datosActualizados) {
+        Producto existente = buscarEntidadPorId(id);
+
+        if (!existente.getNombre().equalsIgnoreCase(datosActualizados.nombre())
+                && productoRepository.existsByNombreIgnoreCase(datosActualizados.nombre())) {
+            throw new DatoDuplicadoException(
+                    "Ya existe otro producto con el nombre: " + datosActualizados.nombre()
+            );
+        }
+
+        existente.setNombre(datosActualizados.nombre());
+        existente.setCategoria(datosActualizados.categoria());
+        existente.setPrecio(datosActualizados.precio());
+        existente.setStock(datosActualizados.stock());
+
+        Producto actualizado = productoRepository.save(existente);
+        return toResponse(actualizado);
+    }
+
+    public void eliminar(String id) {
+        Producto existente = buscarEntidadPorId(id);
+        productoRepository.deleteById(existente.getId());
+    }
+
+    private Producto buscarEntidadPorId(String id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "Producto no encontrado con id: " + id
                 ));
     }
 
-    public Producto actualizar(String id, Producto datosActualizados) {
-        Producto existente = obtenerPorId(id);
-
-        if (!existente.getNombre().equalsIgnoreCase(datosActualizados.getNombre())
-                && productoRepository.existsByNombreIgnoreCase(datosActualizados.getNombre())) {
-            throw new DatoDuplicadoException(
-                    "Ya existe otro producto con el nombre: " + datosActualizados.getNombre()
-            );
-        }
-
-        existente.setNombre(datosActualizados.getNombre());
-        existente.setCategoria(datosActualizados.getCategoria());
-        existente.setPrecio(datosActualizados.getPrecio());
-        existente.setStock(datosActualizados.getStock());
-
-        return productoRepository.save(existente);
-    }
-
-    public void eliminar(String id) {
-        Producto existente = obtenerPorId(id);
-        productoRepository.deleteById(existente.getId());
+    private ProductoResponse toResponse(Producto producto) {
+        return new ProductoResponse(
+                producto.getId(),
+                producto.getNombre(),
+                producto.getCategoria(),
+                producto.getPrecio(),
+                producto.getStock()
+        );
     }
 }
