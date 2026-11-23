@@ -128,4 +128,40 @@ class ProductoServiceTest {
         assertThrows(RecursoNoEncontradoException.class, () -> productoService.eliminar("99"));
         verify(productoRepository, never()).deleteById(any());
     }
+    @Test
+    void actualizarProducto_mismoNombre_actualizaSinError() {
+        Producto cambiosMismoNombre = new Producto(
+                null,
+                "teclado mecánico",
+                "Periféricos",
+                new BigDecimal("1350.00"),
+                20
+        );
+
+        when(productoRepository.findById("1")).thenReturn(Optional.of(productoBase));
+        when(productoRepository.save(any(Producto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Producto actualizado = productoService.actualizar("1", cambiosMismoNombre);
+
+        assertEquals("teclado mecánico", actualizado.getNombre());
+        assertEquals(new BigDecimal("1350.00"), actualizado.getPrecio());
+        assertEquals(20, actualizado.getStock());
+    }
+
+    @Test
+    void actualizarProducto_nombreDuplicado_lanzaExcepcion() {
+        Producto cambiosDuplicados = new Producto(
+                null,
+                "Mouse Gamer",
+                "Periféricos",
+                new BigDecimal("1500.00"),
+                10
+        );
+
+        when(productoRepository.findById("1")).thenReturn(Optional.of(productoBase));
+        when(productoRepository.existsByNombreIgnoreCase("Mouse Gamer")).thenReturn(true);
+
+        assertThrows(DatoDuplicadoException.class, () -> productoService.actualizar("1", cambiosDuplicados));
+        verify(productoRepository, never()).save(any(Producto.class));
+    }
 }
